@@ -15,7 +15,7 @@ class HCSR04:
         GPIO.output(self._pin_trig, False)
 
         # init continuous mean data filter
-        self._sensor_data = mdp.MeanDataPoint(50)
+        self._sensor_data = mdp.MeanDataPoint(5)
         self._distance = 0
 
     def update(self):
