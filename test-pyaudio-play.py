@@ -10,7 +10,7 @@ CHUNK = 1024
 #     sys.exit(-1)
 
 # wf = wave.open(sys.argv[1], 'rb')
-wf = wave.open("/home/pi/Music/TrackAudio.wav", 'rb')
+wf = wave.open("test1.wav", 'rb')
 
 
 p = pyaudio.PyAudio()

@@ -6,8 +6,11 @@ chans = 1 # 1 channel
 samp_rate = 44100 # 44.1kHz sampling rate
 chunk = 4096 # 2^12 samples for buffer
 record_secs = 3 # seconds to record
-dev_index = 2 # device index found by p.get_device_info_by_index(ii)
-wav_output_filename = 'test1.wav' # name of .wav file
+dev_index = 1 # device index found by p.get_device_info_by_index(ii)
+
+# path_files = os.path.join(os.path.dirname(__file__), '_files')
+# file_ = random.choice(os.listdir(path_files))
+wav_output_filename = '_files/test1.wav' # name of .wav file
 
 audio = pyaudio.PyAudio() # create pyaudio instantiation
 
@@ -20,7 +23,7 @@ frames = []
 
 # loop through stream and append audio chunks to frame array
 for ii in range(0,int((samp_rate/chunk)*record_secs)):
-    data = stream.read(chunk)
+    data = stream.read(chunk, exception_on_overflow = False)
     frames.append(data)
 
 print("finished recording")

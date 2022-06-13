@@ -6,6 +6,8 @@ import threading
 import vlc
 
 import sensor_hcsr04 as hc
+import gpio_button as btn
+import audio_recorder as rec
 
 # MAIN
 path_files = os.path.join(os.path.dirname(__file__), '_files')
@@ -17,6 +19,9 @@ delay_sens = 0.1 # seconds
 file_ = ''
 audio_volume = 125
 
+# BUTTON
+pin_button = 17
+
 # SENSOR
 dist_sensor = None
 pin_trig = 23
@@ -25,6 +30,9 @@ dist_threshold_in = 10
 dist_threshold_out = 50
 timer_out_0 = -1
 delay_out = 1.0 # second
+
+# AUDIO RECORDER
+recorder = None
 
 # PLAYER
 vlc_player = vlc.Instance('--es-fps=15')
@@ -63,8 +71,8 @@ def keyboard_interact():
         print("thread")
         time.sleep(2)
         # if keyboard.read_key() == "a":
-        #     file_ = random.choice(os.listdir(path_files))
-        #     play_golryjoke(file_)
+            # file_ = random.choice(os.listdir(path_files))
+            # play_golryjoke(file_)
 
         # if keyboard.read_key() == "esc":
         #     print("ESC was pressed. quitting...")
@@ -84,6 +92,10 @@ if __name__ == '__main__':
         # Main
         running = True
         dist_sensor = hc.HCSR04(pin_trig, pin_echo)
+        button = btn.Button(pin_button)
+        recorder = rec.AudioRecorder()
+        recorder.record()
+        recorder.save_audio()
 
         # Thread
         # try:
@@ -95,10 +107,11 @@ if __name__ == '__main__':
 
         print("Ok let's go")
         # file_ = random.choice(os.listdir(path_files))
-        # play_golryjoke(file_)
-        # time.sleep(10)
+        play_golryjoke("test1.wav")
+        time.sleep(15)
 
         while running:
+            button.update()
             dist_sensor.update()
 
             if time.time() - timer_trigsens_0 > delay_sens :
