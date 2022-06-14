@@ -9,7 +9,7 @@ class HCSR04:
         # init GPIO
         self._pin_trig = pin_trig_
         self._pin_echo = pin_echo_
-        GPIO.setmode(GPIO.BCM)
+        # GPIO.setmode(GPIO.BCM)
         GPIO.setup(self._pin_trig,GPIO.OUT)
         GPIO.setup(self._pin_echo,GPIO.IN)
         GPIO.output(self._pin_trig, False)
