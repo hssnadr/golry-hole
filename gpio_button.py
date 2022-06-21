@@ -37,7 +37,7 @@ class Button:
 
     def __del__(self):
         print("quitting button")
-        GPIO.cleanup()
+        # GPIO.cleanup()
 
 if __name__ == '__main__':
     button = Button(17)

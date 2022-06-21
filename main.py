@@ -13,22 +13,22 @@ running = False
 path_folder = os.path.join(os.path.dirname(__file__), '_files')
 def get_file_path(file_name_):
     return os.path.join(path_folder, file_name_)
+GPIO.cleanup()
 GPIO.setmode(GPIO.BCM)
 
 # --------------------------------------------------------
 # BUTTON
-pin_button = 17
-button = btn.Button(pin_button)
+button = btn.Button(17)
 
 # SENSOR
 timer_trigsens_0 = 0
 delay_sens = 0.1 # seconds
-pin_trig = 23
-pin_echo = 24
 dist_threshold_in = 10
 dist_threshold_out = 50
 timer_out_0 = -1
 delay_out = 1.0 # second
+pin_trig = 23
+pin_echo = 24
 dist_sensor = hc.HCSR04(pin_trig, pin_echo)
 
 # AUDIO RECORDER
@@ -42,24 +42,18 @@ def make_record(file_name_):
 def quit():
     global running
     global button
+    global dist_sensor
     global recorder
     del button
+    del dist_sensor
     del recorder
     running = False
     print('Quit program...')
+    GPIO.cleanup()
 
 # --------------------------------------------------------
 if __name__ == '__main__':
     try:
-        # ------------------------------------------------
-        # TEST
-        # file_ = get_file_path('test666')
-        # make_record(file_)
-
-        # player.play_golryjoke(file_)
-        # time.sleep(5)
-        
-        # ------------------------------------------------
         # START PROGRAMM
         print("Enter the Golry Hole")
         running = True
@@ -69,7 +63,7 @@ if __name__ == '__main__':
             if button.get_bang():
                 file_rec_ = "vocal_" + time.strftime("%Y%m%d_%H%M%S")
                 make_record(file_rec_)
-                time.sleep(1)
+                time.sleep(0.5)
 
             # SENSITIVE PLAYER
             dist_sensor.update()
@@ -80,7 +74,6 @@ if __name__ == '__main__':
                 
                 # Start listening
                 if dist_sensor.get_distance() < dist_threshold_in and player.is_playing() == False:
-                    print("go")
                     if len(os.listdir(path_folder)) > 0:
                         file_ = random.choice(os.listdir(path_folder))
                         file_path_ = get_file_path(file_)
