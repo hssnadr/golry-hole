@@ -75,17 +75,18 @@ if __name__ == '__main__':
             dist_sensor.update()
             if time.time() - timer_trigsens_0 > delay_sens :
                 timer_trigsens_0 = time.time()
-                print(dist_sensor.get_distance())
-                print("Is media playing ?", player.is_playing(), "!!!")
+                # print(dist_sensor.get_distance())
+                # print("Is media playing ?", player.is_playing(), "!!!")
                 
                 # Start listening
                 if dist_sensor.get_distance() < dist_threshold_in and player.is_playing() == False:
                     print("go")
-                    file_ = random.choice(os.listdir(path_folder))
-                    file_path_ = get_file_path(file_)
-                    player.play_golryjoke(file_path_)
-                    time.sleep(1)
-                    print("----------------------------")
+                    if len(os.listdir(path_folder)) > 0:
+                        file_ = random.choice(os.listdir(path_folder))
+                        file_path_ = get_file_path(file_)
+                        player.play_golryjoke(file_path_)
+                        time.sleep(1)
+                        print("----------------------------")
                 
                 # Stop listening
                 if dist_sensor.get_distance() > dist_threshold_out and player.is_playing() == True:
