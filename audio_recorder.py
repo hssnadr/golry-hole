@@ -1,5 +1,7 @@
+from xmlrpc.client import boolean
 import pyaudio
 import wave
+import time
 
 form_1 = pyaudio.paInt16 # 16-bit resolution
 chans = 1 # 1 channel
@@ -24,34 +26,46 @@ class AudioRecorder:
         # file_ = random.choice(os.listdir(path_files))
         # self.file_name = '_files/test1.wav' # name of .wav file
 
-        self.is_recording = False
+        self._is_recording = False
+        self.time_start = -1.0
+        self.record_duration = 0.0
 
     def __del__(self):
         self.audio.terminate()
     
     def is_recording(self) -> bool:
-        return self.is_recording
+        return self._is_recording
     
-    def record(self):
+    def start(self):
         # create pyaudio stream
-        stream = self.audio.open(format = form_1,rate = samp_rate,channels = chans, \
+        self.stream = self.audio.open(format = form_1,rate = samp_rate,channels = chans, \
                             input_device_index = self.dev_index,input = True, \
                             frames_per_buffer=chunk)
-        print("recording")
         self.frames = []
-
+        self._is_recording = True
+        self.time_start = time.time()
+        print("recording")
+    
+    def update(self):
         # loop through stream and append audio chunks to frame array
-        self.is_recording = True
-        for ii in range(0,int((samp_rate/chunk)*record_secs)):
-            data = stream.read(chunk, exception_on_overflow = False)
+        # for ii in range(0,int((samp_rate/chunk)*record_secs)):
+        if self._is_recording :
+            data = self.stream.read(chunk, exception_on_overflow = False)
             self.frames.append(data)
         
-        self.is_recording = False
-        print("finished recording")
-
+    def ellapsed_record(self) -> float:
+        if self._is_recording:
+            self.record_duration = time.time() - self.time_start
+        return self.record_duration
+    
+    def stop(self):
         # stop the stream, close it, and terminate the pyaudio instantiation
-        stream.stop_stream()
-        stream.close()
+        if self._is_recording :
+            self.stream.stop_stream()
+            self.stream.close()
+        
+        self._is_recording = False
+        print("finished recording")
 
     def save_audio(self, file_name_):
         # save the audio frames as .wav file

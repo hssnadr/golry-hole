@@ -29,7 +29,7 @@ class HCSR04:
         sens_end_ = -1.0
         is_timeout_ = False
 
-        print("1 - HCSR04.update")
+        # print("1 - HCSR04.update")
 
         while GPIO.input(self._pin_echo)==0:
             sens_start_ = time.time()
@@ -37,7 +37,7 @@ class HCSR04:
                 is_timeout_ = True
                 break
 
-        print("2 - HCSR04.update")
+        # print("2 - HCSR04.update")
 
         if not is_timeout_ :
             while GPIO.input(self._pin_echo)==1:
@@ -46,13 +46,13 @@ class HCSR04:
                     is_timeout_ = True
                     break
 
-        print("3 - HCSR04.update")
+        # print("3 - HCSR04.update")
         if not is_timeout_ and sens_end_ != -1 :
             self._distance = round((sens_end_ - sens_start_) * 340 * 100 / 2, 1)  ## Sound speed = 340 m.s-1
             self._sensor_data.push_raw_data(self._distance)
-            print("4 - HCSR04.update")
+            # print("4 - HCSR04.update")
             self._distance = self._sensor_data.get_filter_value()
-            print("5 - HCSR04.update")
+            # print("5 - HCSR04.update")
     
     def get_distance(self) -> float:
         return self._distance
