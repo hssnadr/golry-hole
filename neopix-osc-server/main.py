@@ -37,6 +37,7 @@ def filter_handler(address, *args):
 
 dispatcher = Dispatcher()
 dispatcher.map("/record", filter_handler)
+dispatcher.map("/play", print)
 
 ip = "127.0.0.1"
 port = 1337

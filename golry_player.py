@@ -42,3 +42,7 @@ def stop():
 
 def is_playing() -> bool:
     return audio_player.is_playing()
+
+def get_media_sec() -> float:
+    global audio_player
+    return audio_player.get_length() / 1000.0

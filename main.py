@@ -2,6 +2,8 @@ import os
 import time
 import random
 import RPi.GPIO as GPIO
+import argparse
+from pythonosc import udp_client
 
 import gpio_button as btn
 import audio_recorder as rec
@@ -15,9 +17,6 @@ def get_file_path(file_name_):
     return os.path.join(path_folder, file_name_)
 GPIO.cleanup()
 GPIO.setmode(GPIO.BCM)
-
-# TEST
-GPIO.setup(25,GPIO.OUT) # to remove
 
 # --------------------------------------------------------
 # BUTTON
@@ -41,6 +40,23 @@ def save_record(file_name_):
     path_file_ = get_file_path(file_name_)
     # recorder.start()
     recorder.save_audio(path_file_  + ".wav")
+
+# OSC
+ip = "127.0.0.1"
+port = 1337
+
+def sendOSC(address_, message_):
+    print("Sending message:", message_, "at", address_)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--ip", default=ip,
+        help="The ip of the OSC server")
+    parser.add_argument("--port", type=int, default=port,
+        help="The port the OSC server is listening on")
+    args = parser.parse_args()
+
+    client = udp_client.SimpleUDPClient(args.ip, args.port)  # set client
+    client.send_message(address_, message_)  # send args message
+    print("Done")
 
 def quit():
     global running
@@ -68,6 +84,7 @@ if __name__ == '__main__':
                     # file_rec_ = "vocal_" + time.strftime("%Y%m%d_%H%M%S")
                     # start_record(file_rec_)
                     recorder.start() # start recording
+                    sendOSC("/record", 5)
 
                 # SENSITIVE PLAYER
                 dist_sensor.update()
@@ -82,7 +99,9 @@ if __name__ == '__main__':
                             file_ = random.choice(os.listdir(path_folder))
                             file_path_ = get_file_path(file_)
                             player.play_golryjoke(file_path_)
-                            time.sleep(1)
+                            time.sleep(0.1)
+                            length_sec_ = player.get_media_sec()
+                            sendOSC("/play", length_sec_)
                             print("----------------------------")
                     
                     # Stop listening
@@ -105,28 +124,8 @@ if __name__ == '__main__':
             
             else :
                 recorder.update()
-
-                # print("ta gueule")
-                # print("ta gueule")
-                # print("ta gueule")
-                # print("ta gueule")
-                # print("ta gueule")
-                # print("ta gueule")
-                # print("ta gueule")
-                # GPIO.output(25, True)
-                # GPIO.output(25, False)
-                # GPIO.output(25, True)
-                # GPIO.output(25, False)
-                # GPIO.output(25, True)
-                # GPIO.output(25, False)
-                # GPIO.output(25, True)
-                # GPIO.output(25, False)
-                # GPIO.output(25, True)
-                # GPIO.output(25, False)
-                # GPIO.output(25, True)
-                # GPIO.output(25, False)
                 
-                if recorder.ellapsed_record() > 25.0:
+                if recorder.ellapsed_record() > 5.0:
                     recorder.stop()
                     file_name_ = "vocal_" + time.strftime("%Y%m%d_%H%M%S")
                     save_record(file_name_)
